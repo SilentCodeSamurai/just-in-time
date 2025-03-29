@@ -12,6 +12,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
@@ -31,24 +32,32 @@ import { groupGetListQuery } from "@/queries/group";
 import { toast } from "sonner";
 import { todoUpdateServerFn } from "@/server/todo";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 type TodoUpdateFormData = z.infer<typeof TodoUpdateInputSchema>;
 
+const getFormValues = (todo: TodoAllItem): TodoUpdateFormData => {
+	return {
+		id: todo.id,
+		completed: undefined,
+		title: todo.title,
+		description: todo.description || undefined,
+		priority: todo.priority,
+		dueDate: todo.dueDate || undefined,
+		categoryId: todo.category?.id || undefined,
+		groupId: todo.group?.id || undefined,
+		tagIds: undefined,
+		meta: {
+			now: new Date(),
+		},
+	};
+};
+
 type TodoUpdateFormProps = {
 	disabled?: boolean;
-	todo: {
-		id: string;
-		title: string;
-		description: string | null;
-		priority: number;
-		dueDate: Date | null;
-		category: { id: string; name: string } | null;
-		group: { id: string; name: string } | null;
-	};
+	todo: TodoAllItem;
 	onSuccess?: () => void;
 };
 
@@ -64,19 +73,12 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 
 	const form = useForm<TodoUpdateFormData>({
 		resolver: zodResolver(TodoUpdateInputSchema),
-		defaultValues: {
-			id: todo.id,
-			title: todo.title,
-			description: todo.description || undefined,
-			priority: todo.priority,
-			dueDate: todo.dueDate || undefined,
-			categoryId: todo.category?.id || undefined,
-			groupId: todo.group?.id || undefined,
-			meta: {
-				now: new Date(),
-			},
-		},
+		defaultValues: getFormValues(todo),
 	});
+
+	useEffect(() => {
+		console.log(form.formState.errors);
+	}, [form.formState.errors]);
 
 	const updateMutation = useMutation({
 		mutationFn: todoUpdateServerFn,
@@ -86,7 +88,7 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 			});
 			const prevTodoCategoryId = todo.category?.id;
 			const prevTodoGroupId = todo.group?.id;
-			
+
 			if (updatedTodo.categoryId !== null) {
 				if (updatedTodo.categoryId !== prevTodoCategoryId) {
 					queryClient.setQueryData(["category", "all"], (old: CategoryAllItem[]) => {
@@ -123,7 +125,7 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 			}
 
 			toast.success("Todo updated");
-			form.reset(updatedTodo);
+			form.reset(getFormValues(updatedTodo));
 			onSuccess?.();
 			setOpen(false);
 		},
@@ -141,7 +143,7 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 			open={open}
 			onOpenChange={(value) => {
 				setOpen(value);
-				form.reset(todo);
+				form.reset(getFormValues(todo));
 			}}
 		>
 			<DialogTrigger asChild>
@@ -319,8 +321,7 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 											<Calendar
 												mode="single"
 												selected={field.value || undefined}
-												onSelect={field.onChange}
-												initialFocus
+												onSelect={(date) => field.onChange(date || null)}
 											/>
 										</PopoverContent>
 									</Popover>
@@ -341,7 +342,7 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 							)}
 						/>
 						<DialogFooter>
-							<Button type="submit" disabled={updateMutation.isPending}>
+							<Button type="submit" disabled={updateMutation.isPending || !form.formState.isDirty}>
 								Update
 							</Button>
 						</DialogFooter>

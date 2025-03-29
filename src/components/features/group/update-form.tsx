@@ -16,6 +16,16 @@ import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+type GroupUpdateFormData = z.infer<typeof GroupUpdateInputSchema>;
+
+const getFormValues = (group: GroupAllItem): GroupUpdateFormData => {
+	return {
+		id: group.id,
+		name: group.name,
+		description: group.description,
+	};
+};
+
 type GroupUpdateFormProps = {
 	group: GroupAllItem;
 	onSuccess?: () => void;
@@ -24,13 +34,9 @@ type GroupUpdateFormProps = {
 export function GroupUpdateForm({ group, onSuccess }: GroupUpdateFormProps) {
 	const [open, setOpen] = useState(false);
 	const queryClient = useQueryClient();
-	const form = useForm<z.infer<typeof GroupUpdateInputSchema>>({
+	const form = useForm<GroupUpdateFormData>({
 		resolver: zodResolver(GroupUpdateInputSchema),
-		defaultValues: {
-			id: group.id,
-			name: group.name,
-			description: group.description,
-		},
+		defaultValues: getFormValues(group),
 	});
 
 	const updateMutation = useMutation({
@@ -43,7 +49,7 @@ export function GroupUpdateForm({ group, onSuccess }: GroupUpdateFormProps) {
 				return old.map((c) => (c.id === group.id ? { ...c, ...updatedGroup } : c))
 			})
 			toast.success("Group updated");
-			form.reset(updatedGroup);
+			form.reset(getFormValues(updatedGroup));
 			onSuccess?.();
 			setOpen(false);
 		},
@@ -61,7 +67,7 @@ export function GroupUpdateForm({ group, onSuccess }: GroupUpdateFormProps) {
 			open={open}
 			onOpenChange={(value) => {
 				setOpen(value);
-				form.reset(group);
+				form.reset(getFormValues(group));
 			}}
 		>
 			<DialogTrigger asChild>
@@ -133,7 +139,7 @@ export function GroupUpdateForm({ group, onSuccess }: GroupUpdateFormProps) {
 							)}
 						/>
 						<DialogFooter>
-							<Button type="submit" disabled={updateMutation.isPending}>
+							<Button type="submit" disabled={updateMutation.isPending || !form.formState.isDirty}>
 								Update
 							</Button>
 						</DialogFooter>

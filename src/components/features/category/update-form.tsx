@@ -17,6 +17,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 type CategoryUpdateFormData = z.infer<typeof CategoryUpdateInputSchema>;
 
+const getFormValues = (category: CategoryAllItem): CategoryUpdateFormData => {
+	return {
+		id: category.id,
+		name: category.name,
+		description: category.description || undefined,
+		color: category.color || undefined,
+	};
+};
+
 type CategoryUpdateFormProps = {
 	category: CategoryAllItem;
 	onSuccess?: () => void;
@@ -27,12 +36,7 @@ export function CategoryUpdateForm({ category, onSuccess }: CategoryUpdateFormPr
 	const queryClient = useQueryClient();
 	const form = useForm<CategoryUpdateFormData>({
 		resolver: zodResolver(CategoryUpdateInputSchema),
-		defaultValues: {
-			id: category.id,
-			name: category.name,
-			description: category.description || undefined,
-			color: category.color || undefined,
-		},
+		defaultValues: getFormValues(category),
 	});
 
 	const updateMutation = useMutation({
@@ -45,7 +49,7 @@ export function CategoryUpdateForm({ category, onSuccess }: CategoryUpdateFormPr
 				return old.map((c) => (c.id === category.id ? { ...c, ...updatedCategory } : c));
 			});
 			toast.success("Category updated");
-			form.reset(updatedCategory);
+			form.reset(getFormValues(updatedCategory));
 			onSuccess?.();
 			setOpen(false);
 		},
@@ -63,7 +67,7 @@ export function CategoryUpdateForm({ category, onSuccess }: CategoryUpdateFormPr
 			open={open}
 			onOpenChange={(value) => {
 				setOpen(value);
-				form.reset(category);
+				form.reset(getFormValues(category));
 			}}
 		>
 			<DialogTrigger asChild>
@@ -152,7 +156,7 @@ export function CategoryUpdateForm({ category, onSuccess }: CategoryUpdateFormPr
 							)}
 						/>
 						<DialogFooter>
-							<Button type="submit" disabled={updateMutation.isPending}>
+							<Button type="submit" disabled={updateMutation.isPending || !form.formState.isDirty}>
 								Update
 							</Button>
 						</DialogFooter>
