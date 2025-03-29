@@ -9,7 +9,7 @@ RUN npm ci --legacy-peer-deps
 
 COPY . .
 
-RUN npm run build
+RUN npm run build-node
 
 EXPOSE 3000
 

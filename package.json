@@ -4,7 +4,9 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vinxi dev --host",
-		"build": "prisma generate --no-engine && vinxi build",
+		"build-vercel": "prisma generate --no-engine && vinxi build --preset vercel",
+		"build-netlify": "prisma generate --no-engine && vinxi build --preset netlify",
+		"build-node": "prisma generate --no-engine && vinxi build --preset node-server",
 		"start": "vinxi start"
 	},
 	"keywords": [],
