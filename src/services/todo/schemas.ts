@@ -4,6 +4,13 @@ import { z } from "zod";
 export const PrioritySchema = z.number().min(1).max(4);
 export type Priority = z.infer<typeof PrioritySchema>;
 
+const validateDueDate = (dueDate: Date) => {
+	const today = new Date();
+	const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+	const dueDateUTC = new Date(Date.UTC(dueDate.getUTCFullYear(), dueDate.getUTCMonth(), dueDate.getUTCDate()));
+	return dueDateUTC >= todayUTC;
+};
+
 // Todo
 export const TodoGetAllInputSchema = z.object({
 	filter: z
@@ -30,35 +37,54 @@ export const TodoGetAllInputSchema = z.object({
 		.optional(),
 });
 
-export const TodoCreateInputSchema = z.object({
-	title: z.string().min(1, { message: "Title is required" }),
-	description: z.string().nullable(),
-	priority: PrioritySchema.optional().default(2),
-	dueDate: z
-		.date()
-		.min(new Date(new Date().setHours(0, 0, 0, 0)), { message: "Due date must be today or later" })
-		.nullable(),
-	groupId: z.string().nullable(),
-	categoryId: z.string().nullable(),
-	tagIds: z.array(z.string()).nullable(),
-	subtasks: z.array(z.object({ title: z.string() })).nullable(),
-});
+export const TodoCreateInputSchema = z
+	.object({
+		title: z.string().min(1, { message: "Title is required" }),
+		description: z.string().nullable(),
+		priority: PrioritySchema.optional().default(2),
+		dueDate: z.date().nullable(),
+		groupId: z.string().nullable(),
+		categoryId: z.string().nullable(),
+		tagIds: z.array(z.string()).nullable(),
+		subtasks: z.array(z.object({ title: z.string() })).nullable(),
+	})
+	.refine(
+		(data) => {
+			if (data.dueDate) {
+				return validateDueDate(data.dueDate);
+			}
+			return true;
+		},
+		{
+			message: "Due date must be today or later",
+			path: ["dueDate"],
+		}
+	);
 
-export const TodoUpdateInputSchema = z.object({
-	id: z.string().min(1, { message: "Id is required" }),
-	completed: z.boolean().optional(),
-	title: z.string().min(1, { message: "Title is required" }).optional(),
-	description: z.string().nullable().optional(),
-	priority: PrioritySchema.optional(),
-	dueDate: z
-		.date()
-		.min(new Date(new Date().setHours(0, 0, 0, 0)), { message: "Due date must be today or later" })
-		.nullable()
-		.optional(),
-	categoryId: z.string().nullable().optional(),
-	groupId: z.string().nullable().optional(),
-	tagIds: z.array(z.string()).optional(),
-});
+export const TodoUpdateInputSchema = z
+	.object({
+		id: z.string().min(1, { message: "Id is required" }),
+		completed: z.boolean().optional(),
+		title: z.string().min(1, { message: "Title is required" }).optional(),
+		description: z.string().nullable().optional(),
+		priority: PrioritySchema.optional(),
+		dueDate: z.date().nullable().optional(),
+		categoryId: z.string().nullable().optional(),
+		groupId: z.string().nullable().optional(),
+		tagIds: z.array(z.string()).optional(),
+	})
+	.refine(
+		(data) => {
+			if (data.dueDate) {
+				return validateDueDate(data.dueDate);
+			}
+			return true;
+		},
+		{
+			message: "Due date must be today or later",
+			path: ["dueDate"],
+		}
+	);
 
 export const TodoDeleteInputSchema = z.object({
 	id: z.string().min(1, { message: "Id is required" }),

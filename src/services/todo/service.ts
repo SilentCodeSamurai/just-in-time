@@ -56,9 +56,6 @@ export class TodoService {
 	}
 
 	static async update(input: TodoUpdateInputDTO, userId: string) {
-		if (input.dueDate && input.dueDate < new Date(new Date().setHours(0, 0, 0, 0))) {
-			throw new Error("Due date cannot be in the past");
-		}
 		const todo = await prisma.todo.update({
 			where: { id: input.id, userId },
 			data: { ...input, completedAt: input.completed ? new Date() : undefined },
