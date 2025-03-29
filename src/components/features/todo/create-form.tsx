@@ -17,6 +17,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
+import { CategoryAllItem } from "@/types/category";
+import { GroupAllItem } from "@/types/group";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { PriorityBadge } from "./priority-badges";
@@ -64,6 +66,18 @@ export function TodoCreateForm() {
 		mutationFn: todoCreateServerFn,
 		onSuccess: (createdTodo) => {
 			queryClient.setQueryData(["todo", "all"], (old: TodoAllItem[]) => [...old, createdTodo]);
+			if (createdTodo.categoryId) {
+				queryClient.setQueryData(["category", "all"], (old: CategoryAllItem[]) =>
+					old.map((c) =>
+						c.id === createdTodo.categoryId ? { ...c, _count: { todos: c._count.todos + 1 } } : c
+					)
+				);
+			}
+			if (createdTodo.groupId) {
+				queryClient.setQueryData(["group", "all"], (old: GroupAllItem[]) =>
+					old.map((g) => (g.id === createdTodo.groupId ? { ...g, _count: { todos: g._count.todos + 1 } } : g))
+				);
+			}
 			toast.success("Todo created");
 			form.reset();
 			setOpen(false);
@@ -245,7 +259,7 @@ export function TodoCreateForm() {
 										<PopoverContent className="p-0 w-auto">
 											<Calendar
 												mode="single"
-												disabled={{before: new Date(new Date().setHours(0, 0, 0, 0))}}
+												disabled={{ before: new Date(new Date().setHours(0, 0, 0, 0)) }}
 												selected={field.value || undefined}
 												onSelect={(date) => field.onChange(date || null)}
 											/>
