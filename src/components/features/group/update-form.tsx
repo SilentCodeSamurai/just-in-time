@@ -43,11 +43,11 @@ export function GroupUpdateForm({ group, onSuccess }: GroupUpdateFormProps) {
 		mutationFn: groupUpdateServerFn,
 		onSuccess: (updatedGroup) => {
 			queryClient.setQueryData(["category", "all"], (old: GroupAllItem[]) => {
-				return old.map((c) => (c.id === group.id ? { ...c, ...updatedGroup } : c));
+				return old.map((c) => (c.id === group.id ? { ...updatedGroup } : c));
 			});
 			queryClient.setQueryData(["category", "list"], (old: GroupListItem[]) => {
-				return old.map((c) => (c.id === group.id ? { ...c, ...updatedGroup } : c))
-			})
+				return old.map((c) => (c.id === group.id ? { ...updatedGroup } : c));
+			});
 			toast.success("Group updated");
 			form.reset(getFormValues(updatedGroup));
 			onSuccess?.();

@@ -77,7 +77,7 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 		mutationFn: todoUpdateServerFn,
 		onSuccess: (updatedTodo) => {
 			queryClient.setQueryData(["todo", "all"], (old: TodoAllItem[]) => {
-				return old.map((t) => (t.id === todo.id ? { ...t, ...updatedTodo } : t));
+				return old.map((t) => (t.id === todo.id ? { ...updatedTodo } : t));
 			});
 			const prevTodoCategoryId = todo.category?.id;
 			const prevTodoGroupId = todo.group?.id;

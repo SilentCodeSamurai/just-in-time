@@ -43,10 +43,10 @@ export function CategoryUpdateForm({ category, onSuccess }: CategoryUpdateFormPr
 		mutationFn: categoryUpdateServerFn,
 		onSuccess: (updatedCategory) => {
 			queryClient.setQueryData(["category", "all"], (old: CategoryAllItem[]) => {
-				return old.map((c) => (c.id === category.id ? { ...c, ...updatedCategory } : c));
+				return old.map((c) => (c.id === category.id ? { ...updatedCategory } : c));
 			});
 			queryClient.setQueryData(["category", "list"], (old: CategoryListItem[]) => {
-				return old.map((c) => (c.id === category.id ? { ...c, ...updatedCategory } : c));
+				return old.map((c) => (c.id === category.id ? { ...updatedCategory } : c));
 			});
 			toast.success("Category updated");
 			form.reset(getFormValues(updatedCategory));
