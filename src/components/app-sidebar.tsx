@@ -17,6 +17,7 @@ import { useCallback, useEffect } from "react";
 
 import { Button } from "./ui/button";
 import { Logo } from "./logo";
+import ThemeColorPicker from "./theme-color-picker";
 
 const items = [
 	{
@@ -51,15 +52,15 @@ type AppSidebarProps = {
 };
 
 export function AppSidebar({ email }: AppSidebarProps) {
-	const { setOpenMobile } = useSidebar()
-	const router = useRouter()
+	const { setOpenMobile } = useSidebar();
+	const router = useRouter();
 
 	useEffect(() => {
 		if (router.state) {
-			setOpenMobile(false)
+			setOpenMobile(false);
 		}
-	}, [router.state, setOpenMobile])
-	
+	}, [router.state, setOpenMobile]);
+
 	return (
 		<Sidebar variant="floating">
 			<SidebarHeader>
@@ -78,7 +79,7 @@ export function AppSidebar({ email }: AppSidebarProps) {
 						<SidebarMenu>
 							{items.map((item) => (
 								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild >
+									<SidebarMenuButton asChild>
 										<Link to={item.url} viewTransition={true}>
 											<item.icon className="text-primary" />
 											<span>{item.title}</span>
@@ -95,7 +96,8 @@ export function AppSidebar({ email }: AppSidebarProps) {
 					<SidebarGroup>
 						<SidebarGroupContent>
 							<p className="overflow-hidden font-bold text-primary text-sm text-ellipsis">{email}</p>
-							<SidebarMenuItem className="flex justify-start">
+							<SidebarMenuItem className="flex justify-end gap-2">
+								<ThemeColorPicker />
 								<SidebarMenuButton asChild>
 									<Button asChild variant="destructive" className="size-8">
 										<Link to="/logout">

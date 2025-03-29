@@ -1,11 +1,12 @@
 // app/routes/__root.tsx
 
-import { HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { HeadContent, Outlet, Scripts, useLayoutEffect } from "@tanstack/react-router";
 
 import { QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { ThemeColorProvider } from "@/hooks/use-theme-color";
 import { Toaster } from "@/components/ui/sonner";
 import appCss from "@/styles/globals.css?url";
 import { createRootRouteWithContext } from "@tanstack/react-router";
@@ -43,7 +44,7 @@ export const Route = createRootRouteWithContext<{
 				sizes: "96x96",
 				href: "/favicon-96x96.png",
 			},
-			{	
+			{
 				rel: "icon",
 				type: "image/svg+xml",
 				href: "/favicon.svg",
@@ -74,19 +75,24 @@ export const Route = createRootRouteWithContext<{
 
 function RootComponent() {
 	return (
-		<RootDocument>
-			<Outlet />
-		</RootDocument>
+		<>
+			<RootDocument>
+				<ThemeColorProvider>
+					<Outlet />
+				</ThemeColorProvider>
+			</RootDocument>
+		</>
 	);
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 	return (
-		<html>
+		<html suppressHydrationWarning>
 			<head>
 				<HeadContent />
 			</head>
-			<body className="bg-gradient-to-r from-background to-primary/20 h-svh">
+			<body className="relative min-h-svh">
+				<div className="z-[-1] absolute inset-0 bg-gradient-to-r from-background to-primary opacity-10 h-full" />
 				{children}
 				<TanStackRouterDevtools position="bottom-right" />
 				<ReactQueryDevtools buttonPosition="bottom-left" />

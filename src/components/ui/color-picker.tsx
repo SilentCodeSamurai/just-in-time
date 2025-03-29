@@ -1,12 +1,12 @@
 "use client";
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn, debounce } from "@/lib/utils";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { HexColorPicker } from "react-colorful";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 
 interface ColorPickerProps {
 	value: string;
@@ -25,6 +25,8 @@ function ColorPicker({
 }: Omit<React.ComponentProps<"button">, "value" | "onChange" | "onBlur"> & ColorPickerProps) {
 	const [open, setOpen] = useState(false);
 
+	const debouncedOnChange = useMemo(() => debounce(onChange, 100), [onChange]);
+
 	const parsedValue = useMemo(() => {
 		return value || "#FFFFFF";
 	}, [value]);
@@ -34,7 +36,7 @@ function ColorPicker({
 			<PopoverTrigger asChild disabled={disabled} onBlur={onBlur}>
 				<Button
 					{...props}
-					className={cn("block", className)}
+					className={cn("", className)}
 					name={name}
 					onClick={() => {
 						setOpen(true);
@@ -44,16 +46,14 @@ function ColorPicker({
 						backgroundColor: parsedValue,
 					}}
 					variant="outline"
-				>
-					<div />
-				</Button>
+				></Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-full">
-				<HexColorPicker color={parsedValue} onChange={onChange} />
+				<HexColorPicker color={parsedValue} onChange={debouncedOnChange} />
 				<Input
 					maxLength={7}
 					onChange={(e) => {
-						onChange(e?.currentTarget?.value);
+						debouncedOnChange(e?.currentTarget?.value);
 					}}
 					value={parsedValue}
 				/>
