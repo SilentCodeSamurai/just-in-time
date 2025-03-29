@@ -53,13 +53,13 @@ const getFormValues = (todo: TodoAllItem): TodoUpdateFormData => {
 };
 
 type TodoUpdateFormProps = {
-	disabled?: boolean;
 	todo: TodoAllItem;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
 	onSuccess?: () => void;
 };
 
-export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProps) {
-	const [open, setOpen] = useState(false);
+export function TodoUpdateForm({ todo, onSuccess, open, onOpenChange }: TodoUpdateFormProps) {
 	const queryClient = useQueryClient();
 
 	const categoryListResult = useSuspenseQuery(categoryGetListQuery);
@@ -120,7 +120,7 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 			toast.success("Todo updated");
 			form.reset(getFormValues(updatedTodo));
 			onSuccess?.();
-			setOpen(false);
+			onOpenChange(false);
 		},
 		onError: () => {
 			toast.error("Failed to update todo");
@@ -135,29 +135,10 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 		<Dialog
 			open={open}
 			onOpenChange={(value) => {
-				setOpen(value);
+				onOpenChange(value);
 				form.reset(getFormValues(todo));
 			}}
 		>
-			<DialogTrigger asChild>
-				<Button type="button" variant="outline" className="size-8" disabled={disabled}>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						className="size-4"
-					>
-						<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-						<path d="m15 5 4 4" />
-					</svg>
-				</Button>
-			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Update todo</DialogTitle>
@@ -313,7 +294,7 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 										<PopoverContent className="p-0 w-auto">
 											<Calendar
 												mode="single"
-												disabled={{before: new Date(new Date().setHours(0, 0, 0, 0))}}
+												disabled={{ before: new Date(new Date().setHours(0, 0, 0, 0)) }}
 												selected={field.value || undefined}
 												onSelect={(date) => field.onChange(date || null)}
 											/>

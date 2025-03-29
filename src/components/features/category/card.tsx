@@ -1,38 +1,27 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CategoryAllItem, CategoryListItem } from "@/types/category";
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
-import { ExternalLink, Trash } from "lucide-react";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { EllipsisVertical, ExternalLink } from "lucide-react";
 import { motion, useAnimation } from "motion/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
+import { CategoryAllItem } from "@/types/category";
+import { CategoryDeleteDialog } from "./delete-dialog";
 import { CategoryUpdateForm } from "./update-form";
+import { ColorMarker } from "@/components/ui/color-marker";
 import { Link } from "@tanstack/react-router";
-import { categoryDeleteServerFn } from "@/server/category";
-import { toast } from "sonner";
+import { useState } from "react";
 
 export function CategoryCard({ category }: { category: CategoryAllItem }) {
-	const queryClient = useQueryClient();
 	const controls = useAnimation();
-
-	const deleteMutation = useMutation({
-		mutationFn: categoryDeleteServerFn,
-		onSuccess: () => {
-			queryClient.setQueryData(["category", "all"], (old: CategoryAllItem[]) => {
-				return old.filter((c) => c.id !== category.id);
-			});
-			queryClient.setQueryData(["category", "list"], (old: CategoryListItem[]) => {
-				return old.filter((c) => c.id !== category.id);
-			});
-			toast.success("Category deleted");
-		},
-		onError: (error) => {
-			toast.error(`Failed to delete category: ${error}`);
-		},
-	});
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+	const [updateFormOpen, setUpdateFormOpen] = useState(false);
 
 	const handleUpdateSuccess = () => {
 		controls.start({
@@ -43,24 +32,16 @@ export function CategoryCard({ category }: { category: CategoryAllItem }) {
 
 	return (
 		<>
+			<CategoryDeleteDialog category={category} open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} />
+			<CategoryUpdateForm
+				category={category}
+				open={updateFormOpen}
+				onOpenChange={setUpdateFormOpen}
+				onSuccess={handleUpdateSuccess}
+			/>
 			<motion.div animate={controls}>
-				<Card key={category.id} className={`w-full relative`}>
-					<div
-						style={{ height: "calc(100% + 2px)" }}
-						className="-top-[1px] right-0 bottom-0 -left-[1px] absolute border-1 border-transparent rounded-xl overflow-hidden pointer-events-none"
-					>
-						<div
-							style={{
-								zIndex: 0,
-								position: "absolute",
-								top: 0,
-								left: "-5px",
-								width: "20px",
-								height: "100%",
-								background: `linear-gradient(to right, ${category?.color || "gray"} 0%, transparent 100%)`,
-							}}
-						></div>
-					</div>
+				<Card key={category.id} className={`w-full h-fit relative gap-1 pl-2 lg:pl-0`}>
+					<ColorMarker color={category.color} />
 					<CardHeader>
 						<div className="flex flex-row justify-between items-center gap-2">
 							<div className="flex flex-row items-center gap-2">
@@ -69,42 +50,27 @@ export function CategoryCard({ category }: { category: CategoryAllItem }) {
 									style={{ backgroundColor: category.color || "inherit" }}
 								/>
 							</div>
-							<div className="flex flex-row items-center gap-2">
-								<CategoryUpdateForm category={category} onSuccess={handleUpdateSuccess} />
-								<Dialog>
-									<DialogTrigger asChild>
-										<Button type="button" variant="destructive" className="size-8">
-											<Trash className="size-4" />
-										</Button>
-									</DialogTrigger>
-									<DialogContent>
-										<DialogHeader>
-											<DialogTitle>Delete item ?</DialogTitle>
-											<DialogDescription>
-												This action cannot be undone. This will delete the item.
-											</DialogDescription>
-										</DialogHeader>
-										<DialogFooter>
-											<Button
-												type="button"
-												variant="destructive"
-												onClick={() => deleteMutation.mutate({ data: { id: category.id } })}
-												disabled={deleteMutation.status === "pending"}
-											>
-												Delete
-											</Button>
-										</DialogFooter>
-									</DialogContent>
-								</Dialog>
-							</div>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button variant="ghost" className="size-8">
+										<EllipsisVertical className="size-4" />
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent>
+									<DropdownMenuItem onClick={() => setUpdateFormOpen(true)}>Edit</DropdownMenuItem>
+									<DropdownMenuItem variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
+										Delete
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
 						</div>
 
-						<CardTitle className="text-xl">{category.name}</CardTitle>
+						<CardTitle className="text-md">{category.name}</CardTitle>
 
 						<CardDescription>{category.description}</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<div className="flex flex-row items-center gap-4 mt-4">
+						<div className="flex flex-row items-center gap-4">
 							<p className="text-md">TODOS: {category._count.todos}</p>
 							{category._count.todos > 0 && (
 								<Button asChild type="button" variant="outline" className="size-8">

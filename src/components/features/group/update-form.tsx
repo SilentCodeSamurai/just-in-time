@@ -1,6 +1,14 @@
 "use client";
 
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { GroupAllItem, GroupListItem } from "@/types/group";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -29,10 +37,11 @@ const getFormValues = (group: GroupAllItem): GroupUpdateFormData => {
 type GroupUpdateFormProps = {
 	group: GroupAllItem;
 	onSuccess?: () => void;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
 };
 
-export function GroupUpdateForm({ group, onSuccess }: GroupUpdateFormProps) {
-	const [open, setOpen] = useState(false);
+export function GroupUpdateForm({ group, onSuccess, open, onOpenChange }: GroupUpdateFormProps) {
 	const queryClient = useQueryClient();
 	const form = useForm<GroupUpdateFormData>({
 		resolver: zodResolver(GroupUpdateInputSchema),
@@ -51,7 +60,7 @@ export function GroupUpdateForm({ group, onSuccess }: GroupUpdateFormProps) {
 			toast.success("Group updated");
 			form.reset(getFormValues(updatedGroup));
 			onSuccess?.();
-			setOpen(false);
+			onOpenChange(false);
 		},
 		onError: (error) => {
 			toast.error(`Failed to update group: ${error}`);
@@ -66,29 +75,10 @@ export function GroupUpdateForm({ group, onSuccess }: GroupUpdateFormProps) {
 		<Dialog
 			open={open}
 			onOpenChange={(value) => {
-				setOpen(value);
+				onOpenChange(value);
 				form.reset(getFormValues(group));
 			}}
 		>
-			<DialogTrigger asChild>
-				<Button type="button" variant="outline" className="size-8">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						strokeWidth="2"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						className="size-4"
-					>
-						<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-						<path d="m15 5 4 4" />
-					</svg>
-				</Button>
-			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Update group</DialogTitle>

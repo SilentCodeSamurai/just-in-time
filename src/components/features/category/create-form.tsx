@@ -63,6 +63,7 @@ export function CreateCategoryForm() {
 					form.reset();
 				}
 			}}
+			
 		>
 			<DialogTrigger asChild>
 				<Button variant="outline" className="size-8">
@@ -74,7 +75,7 @@ export function CreateCategoryForm() {
 					<DialogTitle>Create category</DialogTitle>
 					<DialogDescription>Create a new category.</DialogDescription>
 				</DialogHeader>
-				<Form {...form}>
+				<Form {...form} >
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 						<FormField
 							control={form.control}

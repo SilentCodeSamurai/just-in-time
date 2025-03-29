@@ -1,4 +1,5 @@
 import { Bookmark, Box, LayoutDashboard, List, LogOut, Tag } from "lucide-react";
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import {
 	Sidebar,
 	SidebarContent,
@@ -10,10 +11,11 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
+import { useCallback, useEffect } from "react";
 
 import { Button } from "./ui/button";
-import { Link } from "@tanstack/react-router";
 import { Logo } from "./logo";
 
 const items = [
@@ -49,6 +51,15 @@ type AppSidebarProps = {
 };
 
 export function AppSidebar({ email }: AppSidebarProps) {
+	const { setOpenMobile } = useSidebar()
+	const router = useRouter()
+
+	useEffect(() => {
+		if (router.state) {
+			setOpenMobile(false)
+		}
+	}, [router.state, setOpenMobile])
+	
 	return (
 		<Sidebar variant="floating">
 			<SidebarHeader>
@@ -67,7 +78,7 @@ export function AppSidebar({ email }: AppSidebarProps) {
 						<SidebarMenu>
 							{items.map((item) => (
 								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
+									<SidebarMenuButton asChild >
 										<Link to={item.url} viewTransition={true}>
 											<item.icon className="text-primary" />
 											<span>{item.title}</span>
