@@ -66,9 +66,9 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 	const animateUpdate = () => {
 		controls.start({
 			transform: ["scale(1)", "scale(1.01)", "scale(1)"],
-			transition: { duration: 0.2 }
+			transition: { duration: 0.2 },
 		});
-	}
+	};
 
 	const updateMutation = useMutation({
 		mutationFn: todoUpdateServerFn,
@@ -114,7 +114,11 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 				<CardHeader>
 					<div className="flex flex-row justify-between items-center gap-2">
 						<div className="flex flex-row items-center gap-2">
-							<Checkbox className="size-5" checked={todo.completed} onCheckedChange={handleChangeStatus} />
+							<Checkbox
+								className="size-5"
+								checked={todo.completed}
+								onCheckedChange={handleChangeStatus}
+							/>
 							{!todo.completed &&
 								todo.dueDate &&
 								diffDays <= 0 &&
@@ -128,11 +132,17 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 								))}
 							<PriorityBadge priority={todo.priority} />
 							<div className="flex flex-row items-center gap-2">
-								<p className="text-gray-500 text-sm">{todo.createdAt.toLocaleString()}</p>
+								<p suppressHydrationWarning className="text-gray-500 text-sm">
+									{todo.createdAt.toLocaleString()}
+								</p>
 							</div>
 						</div>
 						<div className="flex flex-row items-center gap-2">
-							<TodoUpdateForm todo={todo} onSuccess={animateUpdate} disabled={todo.completed || updateMutation.isPending || deleteMutation.isPending} />
+							<TodoUpdateForm
+								todo={todo}
+								onSuccess={animateUpdate}
+								disabled={todo.completed || updateMutation.isPending || deleteMutation.isPending}
+							/>
 							<Dialog>
 								<DialogTrigger asChild>
 									<Button type="button" variant="destructive" className="size-8">
@@ -172,13 +182,16 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 						{todo.completed ? (
 							<div className="flex flex-row items-center gap-2">
 								<p>Completed: </p>
-								<p>{todo.completedAt?.toLocaleString()}</p>
+								<p suppressHydrationWarning>{todo.completedAt?.toLocaleString()}</p>
 							</div>
 						) : (
 							todo.dueDate && (
 								<div className="flex flex-row items-center gap-2">
 									<p>Deadline: </p>
-									<p className={`${!todo.completed ? getWarningColor(todo.dueDate) : ""}`}>
+									<p
+										suppressHydrationWarning
+										className={`${!todo.completed ? getWarningColor(todo.dueDate) : ""}`}
+									>
 										{todo.dueDate?.toLocaleDateString()}
 									</p>
 								</div>
