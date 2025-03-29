@@ -9,7 +9,7 @@ RUN npm ci --legacy-peer-deps
 
 COPY . .
 
-RUN npx prisma generate
+RUN npx prisma generate --no-engine
 RUN npm run build
 
 EXPOSE 3000
