@@ -72,6 +72,9 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 			dueDate: todo.dueDate || undefined,
 			categoryId: todo.category?.id || undefined,
 			groupId: todo.group?.id || undefined,
+			meta: {
+				now: new Date(),
+			},
 		},
 	});
 

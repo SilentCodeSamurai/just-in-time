@@ -4,11 +4,11 @@ import { z } from "zod";
 export const PrioritySchema = z.number().min(1).max(4);
 export type Priority = z.infer<typeof PrioritySchema>;
 
-const validateDueDate = (dueDate: Date) => {
-	const today = new Date();
-	const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
-	const dueDateUTC = new Date(Date.UTC(dueDate.getUTCFullYear(), dueDate.getUTCMonth(), dueDate.getUTCDate()));
-	return dueDateUTC >= todayUTC;
+const validateDueDate = (dueDate: Date, now: Date) => {
+	const dueDateDate = new Date(Date.UTC(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate()));
+	const nowDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+	console.warn(dueDateDate, nowDate);
+	return dueDateDate >= nowDate;
 };
 
 // Todo
@@ -47,11 +47,14 @@ export const TodoCreateInputSchema = z
 		categoryId: z.string().nullable(),
 		tagIds: z.array(z.string()).nullable(),
 		subtasks: z.array(z.object({ title: z.string() })).nullable(),
+		meta: z.object({
+			now: z.date(),
+		}),
 	})
 	.refine(
 		(data) => {
 			if (data.dueDate) {
-				return validateDueDate(data.dueDate);
+				return validateDueDate(data.dueDate, data.meta.now);
 			}
 			return true;
 		},
@@ -72,11 +75,14 @@ export const TodoUpdateInputSchema = z
 		categoryId: z.string().nullable().optional(),
 		groupId: z.string().nullable().optional(),
 		tagIds: z.array(z.string()).optional(),
+		meta: z.object({
+			now: z.date(),
+		}),
 	})
 	.refine(
 		(data) => {
 			if (data.dueDate) {
-				return validateDueDate(data.dueDate);
+				return validateDueDate(data.dueDate, data.meta.now);
 			}
 			return true;
 		},

@@ -57,6 +57,9 @@ export function TodoCreateForm() {
 			categoryId: null,
 			tagIds: null,
 			subtasks: null,
+			meta: {
+				now: new Date(),
+			},
 		},
 	});
 
