@@ -42,10 +42,10 @@ export function GroupUpdateForm({ group, onSuccess }: GroupUpdateFormProps) {
 	const updateMutation = useMutation({
 		mutationFn: groupUpdateServerFn,
 		onSuccess: (updatedGroup) => {
-			queryClient.setQueryData(["category", "all"], (old: GroupAllItem[]) => {
+			queryClient.setQueryData(["group", "all"], (old: GroupAllItem[]) => {
 				return old.map((c) => (c.id === group.id ? { ...updatedGroup } : c));
 			});
-			queryClient.setQueryData(["category", "list"], (old: GroupListItem[]) => {
+			queryClient.setQueryData(["group", "list"], (old: GroupListItem[]) => {
 				return old.map((c) => (c.id === group.id ? { ...updatedGroup } : c));
 			});
 			toast.success("Group updated");
