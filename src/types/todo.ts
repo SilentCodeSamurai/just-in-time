@@ -17,6 +17,7 @@ export type TodoAllItem = {
 	group: {
 		id: string;
 		name: string;
+		color: string | null;
 	} | null;
 	tags: {
 		id: string;

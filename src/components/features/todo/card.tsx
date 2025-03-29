@@ -1,7 +1,7 @@
 "use client";
 
+import { BookmarkCheck, CheckCircle, Clock, EllipsisVertical, TimerOff } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Clock, EllipsisVertical, TimerOff } from "lucide-react";
 import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
@@ -18,6 +18,7 @@ import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ColorMarker } from "@/components/ui/color-marker";
 import { PriorityBadge } from "./priority-badges";
 import { TodoAllItem } from "@/types/todo";
 import { TodoDeleteDialog } from "./delete-dialog";
@@ -106,21 +107,10 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 			/>
 			<motion.div animate={controls}>
 				<Card className={`relative w-full gap-1 pl-2 lg:pl-0`}>
-					{/* <div
-					className={`rounded-sm z-10 absolute top-1/2 left-[-4px] w-[8px] h-[60%] bg-priority-${todo.priority} transform -translate-y-1/2`}
-				></div> */}
-					<div className="top-0 right-0 bottom-0 -left-0 absolute rounded-xl h-full overflow-hidden pointer-events-none">
-						<div
-							className={`opacity-10 absolute top-[-2px] left-0 right-0 bottom-0 z-0 transition-all ease-in-out ${todo.completed ? "bg-green-500" : ""}`}
-						/>
-						<div
-							className="top-0 left-[-5px] z-0 absolute w-4 h-full"
-							style={{
-								background: `linear-gradient(to right, ${todo.category?.color || "gray"} 0%, transparent 100%)`,
-							}}
-						/>
-					</div>
-
+					{todo.completed && (
+						<div className="top-0 right-0 bottom-0 left-0 absolute bg-green-600 opacity-20 rounded-xl pointer-events-none" />
+					)}
+					<ColorMarker color={todo.category?.color || "gray"} />
 					<CardHeader>
 						<div className="flex flex-row justify-between items-center gap-2">
 							<div className="flex flex-row items-center gap-2">
@@ -129,27 +119,47 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 									checked={todo.completed}
 									onCheckedChange={handleChangeStatus}
 								/>
-								{!todo.completed &&
-									(todo.dueDate && diffHours <= 0 ? (
-										<div className="relative">
-											<TimerOff className="size-6 text-red-600 dark:text-red-500" />
-											<TimerOff className="absolute inset-0 opacity-50 dark:opacity-70 rounded-full size-6 text-red-600 animate-ping" />
-										</div>
-									) : (
-										diffHours < 120 &&
-										todo.dueDate && (
-											<Clock
-												className={cn("size-5", getWarningColor(todo.dueDate, now.current))}
-											/>
-										)
-									))}
-
 								<PriorityBadge priority={todo.priority} />
-								<div className="flex flex-row items-center gap-2">
+
+								{!todo.completed
+									? todo.dueDate && (
+											<div className="flex flex-row items-center gap-2">
+												{diffHours <= 0 ? (
+													<div className="relative">
+														<TimerOff className="size-6 text-red-600 dark:text-red-500" />
+														<TimerOff className="absolute inset-0 opacity-50 dark:opacity-70 rounded-full size-6 text-red-600 animate-ping" />
+													</div>
+												) : (
+													<Clock
+														className={cn(
+															"size-5 lg:size-6",
+															getWarningColor(todo.dueDate, now.current)
+														)}
+													/>
+												)}
+												<p
+													suppressHydrationWarning
+													className={`text-xs ${!todo.completed ? getWarningColor(todo.dueDate, now.current) : ""}`}
+												>
+													{formatDistanceToNow(todo.dueDate, { addSuffix: true })}
+												</p>
+											</div>
+										)
+									: todo.completedAt && (
+											<div className="flex flex-row items-center gap-2">
+												<div className="relative w-5 lg:w-8">
+													<BookmarkCheck className="top-[-27px] lg:top-[-44px] absolute opacity-50 size-5 lg:size-8 text-green-600" />
+												</div>
+												<p className="text-muted-foreground text-xs" suppressHydrationWarning>
+													{format(todo.completedAt, "dd/MM/yyyy HH:mm")}
+												</p>
+											</div>
+										)}
+								{/* <div className="flex flex-row items-center gap-2">
 									<p suppressHydrationWarning className="text-gray-500 text-sm">
 										{format(todo.createdAt, "dd/MM/yyyy")}
 									</p>
-								</div>
+								</div> */}
 							</div>
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
@@ -172,33 +182,26 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 						</div>
 
 						<CardDescription>
-							{todo.category && (
-								<div className="flex flex-row items-center gap-2">
-									<div
-										className="rounded-full w-2 h-2"
-										style={{ backgroundColor: todo.category.color || "gray" }}
-									></div>
-									<p>{todo.category?.name}</p>
-								</div>
-							)}
-							{todo.completed && todo.completedAt ? (
-								<div className="flex flex-row items-center gap-2">
-									<p>Completed: </p>
-									<p suppressHydrationWarning>{format(todo.completedAt, "dd/MM/yyyy")}</p>
-								</div>
-							) : (
-								todo.dueDate && (
-									<div className="flex flex-row items-center gap-2 text-md">
-										<p>Deadline: </p>
-										<p
-											suppressHydrationWarning
-											className={`${!todo.completed ? getWarningColor(todo.dueDate, now.current) : ""}`}
-										>
-											{formatDistanceToNow(todo.dueDate, { addSuffix: true })}
-										</p>
+							<div className="flex flex-row items-center gap-2">
+								{todo.category && (
+									<div className="flex flex-row items-center gap-2">
+										<div
+											className="rounded-full w-2 h-2"
+											style={{ backgroundColor: todo.category.color || "gray" }}
+										></div>
+										<p>{todo.category?.name}</p>
 									</div>
-								)
-							)}
+								)}
+								{todo.group && (
+									<div className="flex flex-row items-center gap-2">
+										<div
+											className="rounded-full w-2 h-2"
+											style={{ backgroundColor: todo.group.color || "gray" }}
+										></div>
+										<p>{todo.group?.name}</p>
+									</div>
+								)}
+							</div>
 						</CardDescription>
 						<CardTitle className={`text-sm lg:text-xl ${todo.completed ? "line-through opacity-50" : ""}`}>
 							{todo.title}

@@ -7,20 +7,20 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { GroupAllItem, GroupListItem } from "@/types/group";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
+import { ColorPicker } from "@/components/ui/color-picker";
 import { GroupUpdateInputSchema } from "@/services/group/schemas";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { TodoAllItem } from "@/types/todo";
 import { groupUpdateServerFn } from "@/server/group";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -31,14 +31,15 @@ const getFormValues = (group: GroupAllItem): GroupUpdateFormData => {
 		id: group.id,
 		name: group.name,
 		description: group.description,
+		color: group.color,
 	};
 };
 
 type GroupUpdateFormProps = {
 	group: GroupAllItem;
-	onSuccess?: () => void;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
+	onSuccess?: () => void;
 };
 
 export function GroupUpdateForm({ group, onSuccess, open, onOpenChange }: GroupUpdateFormProps) {
@@ -52,10 +53,16 @@ export function GroupUpdateForm({ group, onSuccess, open, onOpenChange }: GroupU
 		mutationFn: groupUpdateServerFn,
 		onSuccess: (updatedGroup) => {
 			queryClient.setQueryData(["group", "all"], (old: GroupAllItem[]) => {
+				if (!old) return [updatedGroup];
 				return old.map((c) => (c.id === group.id ? { ...updatedGroup } : c));
 			});
 			queryClient.setQueryData(["group", "list"], (old: GroupListItem[]) => {
+				if (!old) return [updatedGroup];
 				return old.map((c) => (c.id === group.id ? { ...updatedGroup } : c));
+			});
+			queryClient.setQueryData(["todo", "all"], (old: TodoAllItem[]) => {
+				if (!old) return [updatedGroup];
+				return old.map((t) => (t.group?.id === group.id ? { ...t, group: { ...updatedGroup } } : t));
 			});
 			toast.success("Group updated");
 			form.reset(getFormValues(updatedGroup));
@@ -118,11 +125,12 @@ export function GroupUpdateForm({ group, onSuccess, open, onOpenChange }: GroupU
 						/>
 						<FormField
 							control={form.control}
-							name="id"
+							name="color"
 							render={({ field }) => (
 								<FormItem>
+									<FormLabel>Color</FormLabel>
 									<FormControl>
-										<Input type="hidden" {...field} />
+										<ColorPicker value={field.value || ""} onChange={field.onChange} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>

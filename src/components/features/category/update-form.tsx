@@ -1,17 +1,25 @@
 "use client";
 
 import { CategoryAllItem, CategoryListItem } from "@/types/category";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { CategoryUpdateInputSchema } from "@/services/category/schemas";
+import { ColorPicker } from "@/components/ui/color-picker";
 import { Input } from "@/components/ui/input";
+import { TodoAllItem } from "@/types/todo";
 import { categoryUpdateServerFn } from "@/server/category";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -44,10 +52,27 @@ export function CategoryUpdateForm({ category, open, onOpenChange, onSuccess }: 
 		mutationFn: categoryUpdateServerFn,
 		onSuccess: (updatedCategory) => {
 			queryClient.setQueryData(["category", "all"], (old: CategoryAllItem[]) => {
+				if (!old) return [updatedCategory];
 				return old.map((c) => (c.id === category.id ? { ...updatedCategory } : c));
 			});
 			queryClient.setQueryData(["category", "list"], (old: CategoryListItem[]) => {
+				if (!old) return [updatedCategory];
 				return old.map((c) => (c.id === category.id ? { ...updatedCategory } : c));
+			});
+			queryClient.setQueryData(["todo", "all"], (old: TodoAllItem[]) => {
+				if (!old) return [updatedCategory];
+				return old.map((t) =>
+					t.category?.id === category.id
+						? {
+								...t,
+								category: {
+									id: updatedCategory.id,
+									name: updatedCategory.name,
+									color: updatedCategory.color,
+								},
+							}
+						: t
+				);
 			});
 			toast.success("Category updated");
 			form.reset(getFormValues(updatedCategory));
@@ -115,23 +140,7 @@ export function CategoryUpdateForm({ category, open, onOpenChange, onSuccess }: 
 								<FormItem>
 									<FormLabel>Color</FormLabel>
 									<FormControl>
-										<Input
-											value={field.value || ""}
-											onChange={(e) => field.onChange(e.target.value)}
-											placeholder="Category color"
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="id"
-							render={({ field }) => (
-								<FormItem>
-									<FormControl>
-										<Input type="hidden" {...field} />
+										<ColorPicker value={field.value || ""} onChange={field.onChange} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>

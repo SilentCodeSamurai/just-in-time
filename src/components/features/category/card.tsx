@@ -64,9 +64,7 @@ export function CategoryCard({ category }: { category: CategoryAllItem }) {
 								</DropdownMenuContent>
 							</DropdownMenu>
 						</div>
-
 						<CardTitle className="text-md">{category.name}</CardTitle>
-
 						<CardDescription>{category.description}</CardDescription>
 					</CardHeader>
 					<CardContent>

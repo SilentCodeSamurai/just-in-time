@@ -40,6 +40,7 @@ export class GroupService {
 			select: {
 				id: true,
 				name: true,
+				color: true,
 			},
 		});
 		return groups;

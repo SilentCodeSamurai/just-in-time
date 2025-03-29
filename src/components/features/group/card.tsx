@@ -11,6 +11,7 @@ import { EllipsisVertical, ExternalLink } from "lucide-react";
 import { motion, useAnimation } from "motion/react";
 
 import { Button } from "@/components/ui/button";
+import { ColorMarker } from "@/components/ui/color-marker";
 import { GroupAllItem } from "@/types/group";
 import { GroupDeleteDialog } from "./delete-dialog";
 import { GroupUpdateForm } from "./update-form";
@@ -40,6 +41,7 @@ export function GroupCard({ group }: { group: GroupAllItem }) {
 			/>
 			<motion.div animate={controls}>
 				<Card key={group.id} className={`w-full h-fit relative gap-1 pl-2 lg:pl-0`}>
+					<ColorMarker color={group.color} />
 					<CardHeader>
 						<div className="flex flex-row justify-between items-center gap-2">
 							<div className="flex flex-row items-center gap-2">

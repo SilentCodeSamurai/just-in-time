@@ -38,6 +38,7 @@ model TodoGroup {
   userId      String
   name        String
   description String?
+  color       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   todos       Todo[]

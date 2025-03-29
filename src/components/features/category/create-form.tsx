@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { CategoryAllItem } from "@/types/category";
 import { CategoryCreateInputSchema } from "@/services/category/schemas";
 import { CategoryListItem } from "@/types/category";
+import { ColorPicker } from "@/components/ui/color-picker";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { categoryCreateServerFn } from "@/server/category";
@@ -33,16 +34,24 @@ export function CreateCategoryForm() {
 		defaultValues: {
 			name: "",
 			description: "",
-			color: "",
+			color: "#FFFFFF",
 		},
 	});
 
 	const createMutation = useMutation({
 		mutationFn: categoryCreateServerFn,
 		onSuccess: (createdCategory) => {
-			queryClient.setQueryData(["category", "all"], (old: CategoryAllItem[]) => [...old, createdCategory]);
-			queryClient.setQueryData(["category", "list"], (old: CategoryListItem[]) => [...old, createdCategory]);
+			queryClient.setQueryData(["category", "all"], (old: CategoryAllItem[]) => {
+				if (!old) return [createdCategory];
+				return [...old, createdCategory];
+			});
+
+			queryClient.setQueryData(["category", "list"], (old: CategoryListItem[]) => {
+				if (!old) return [createdCategory];
+				return [...old, createdCategory];
+			});
 			toast.success("Category created");
+			form.reset();
 			setOpen(false);
 		},
 		onError: (error) => {
@@ -63,7 +72,6 @@ export function CreateCategoryForm() {
 					form.reset();
 				}
 			}}
-			
 		>
 			<DialogTrigger asChild>
 				<Button variant="outline" className="size-8">
@@ -75,7 +83,7 @@ export function CreateCategoryForm() {
 					<DialogTitle>Create category</DialogTitle>
 					<DialogDescription>Create a new category.</DialogDescription>
 				</DialogHeader>
-				<Form {...form} >
+				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 						<FormField
 							control={form.control}
@@ -114,11 +122,7 @@ export function CreateCategoryForm() {
 								<FormItem>
 									<FormLabel>Color</FormLabel>
 									<FormControl>
-										<Input
-											value={field.value || ""}
-											onChange={(e) => field.onChange(e.target.value)}
-											placeholder="Category color"
-										/>
+										<ColorPicker value={field.value || ""} onChange={field.onChange} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>

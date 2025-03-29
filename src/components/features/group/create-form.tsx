@@ -14,6 +14,7 @@ import { GroupAllItem, GroupListItem } from "@/types/group";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
+import { ColorPicker } from "@/components/ui/color-picker";
 import { GroupCreateInputSchema } from "@/services/group/schemas";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
@@ -33,14 +34,21 @@ export function CreateGroupForm() {
 		defaultValues: {
 			name: "",
 			description: "",
+			color: "#FFFFFF",
 		},
 	});
 
 	const createMutation = useMutation({
 		mutationFn: groupCreateServerFn,
 		onSuccess: (createdGroup) => {
-			queryClient.setQueryData(["group", "all"], (old: GroupAllItem[]) => [...old, createdGroup]);
-			queryClient.setQueryData(["group", "list"], (old: GroupListItem[]) => [...old, createdGroup]);
+			queryClient.setQueryData(["group", "all"], (old: GroupAllItem[]) => {
+				if (!old) return [createdGroup];
+				return [...old, createdGroup];
+			});
+			queryClient.setQueryData(["group", "list"], (old: GroupListItem[]) => {
+				if (!old) return [createdGroup];
+				return [...old, createdGroup];
+			});
 			toast.success("Group created");
 			form.reset();
 			setOpen(false);
@@ -99,6 +107,19 @@ export function CreateGroupForm() {
 											onChange={(e) => field.onChange(e.target.value)}
 											placeholder="Group description"
 										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="color"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Color</FormLabel>
+									<FormControl>
+										<ColorPicker value={field.value || ""} onChange={field.onChange} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
