@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Clock, TimerOff } from "lucide-react";
 import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { differenceInHours, format, formatDistanceToNow } from "date-fns";
 import { motion, useAnimation } from "motion/react";
 import { todoDeleteServerFn, todoUpdateServerFn } from "@/server/todo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -14,29 +15,25 @@ import { PriorityBadge } from "./priority-badges";
 import { TodoAllItem } from "@/types/todo";
 import { TodoUpdateForm } from "./update-form";
 import { Trash } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-
-const getDiffDays = (date: Date) => {
-	const now = new Date();
-	const diffTime = date.getTime() - now.getTime();
-	return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-};
+import { useRef } from "react";
 
 const WARNING_COLORS_MAPPING: Map<number, string> = new Map([
 	[0, "text-red-600"],
-	[1, "text-orange-600"],
-	[2, "text-amber-600"],
-	[3, "text-yellow-600"],
-	[5, "text-lime-600"],
-	[7, "text-green-600"],
+	[1, "text-orange-400"],
+	[2, "text-amber-400"],
+	[3, "text-yellow-400"],
+	[5, "text-lime-400"],
+	[7, "text-green-400"],
 ]);
 
-export function getWarningColor(dueDate: Date) {
-	const diffDays = getDiffDays(dueDate);
+export function getWarningColor(dueDate: Date, now: Date) {
+	const diffDays = differenceInHours(dueDate, now) / 24;
 	for (const [key, value] of WARNING_COLORS_MAPPING.entries()) {
 		if (diffDays <= key) return value;
 	}
-	return WARNING_COLORS_MAPPING.get(WARNING_COLORS_MAPPING.size - 1);
+	return WARNING_COLORS_MAPPING.get(7);
 }
 
 export const priorityClasses: Record<number, string> = {
@@ -46,10 +43,16 @@ export const priorityClasses: Record<number, string> = {
 	4: "from-priority-4 bg-priority-4",
 };
 
+const getDueTime = (dueDate: Date) => {
+	return new Date(dueDate.setHours(23, 59, 59, 999));
+};
+
 export function TodoCard({ todo }: { todo: TodoAllItem }) {
+	const now = useRef(new Date());
 	const queryClient = useQueryClient();
 	const controls = useAnimation();
-	const diffDays = todo.dueDate ? getDiffDays(todo.dueDate) : Infinity;
+	const diffHours = todo.dueDate ? differenceInHours(getDueTime(todo.dueDate), now.current) : Infinity;
+
 	const deleteMutation = useMutation({
 		mutationFn: todoDeleteServerFn,
 		onSuccess: () => {
@@ -84,6 +87,8 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 		},
 	});
 
+	console.log(todo.dueDate);
+
 	const handleChangeStatus = (completed: boolean) => {
 		updateMutation.mutate({
 			data: {
@@ -98,7 +103,7 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 
 	return (
 		<motion.div animate={controls}>
-			<Card className={`relative w-full gap-1 min-h-[200px] h-fit max-h-full`}>
+			<Card className={`relative w-full gap-1 min-h-[160px] h-fit max-h-full`}>
 				{/* <div
 					className={`rounded-sm z-10 absolute top-1/2 left-[-4px] w-[8px] h-[60%] bg-priority-${todo.priority} transform -translate-y-1/2`}
 				></div> */}
@@ -111,7 +116,7 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 						style={{
 							background: `linear-gradient(to right, ${todo.category?.color || "gray"} 0%, transparent 100%)`,
 						}}
-					></div>
+					/>
 				</div>
 
 				<CardHeader>
@@ -123,20 +128,22 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 								onCheckedChange={handleChangeStatus}
 							/>
 							{!todo.completed &&
-								todo.dueDate &&
-								diffDays <= 0 &&
-								(diffDays < 0 ? (
+								(todo.dueDate && diffHours <= 0 ? (
 									<div className="relative">
 										<TimerOff className="size-6 text-red-600 dark:text-red-500" />
 										<TimerOff className="absolute inset-0 opacity-50 dark:opacity-70 rounded-full size-6 text-red-600 animate-ping" />
 									</div>
 								) : (
-									<Clock className="size-6 text-orange-400" />
+									diffHours < 120 &&
+									todo.dueDate && (
+										<Clock className={cn("size-6", getWarningColor(todo.dueDate, now.current))} />
+									)
 								))}
+
 							<PriorityBadge priority={todo.priority} />
 							<div className="flex flex-row items-center gap-2">
 								<p suppressHydrationWarning className="text-gray-500 text-sm">
-									{todo.createdAt.toLocaleString()}
+									{format(todo.createdAt, "dd/MM/yyyy")}
 								</p>
 							</div>
 						</div>
@@ -182,20 +189,20 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 								<p>{todo.category?.name}</p>
 							</div>
 						)}
-						{todo.completed ? (
+						{todo.completed && todo.completedAt ? (
 							<div className="flex flex-row items-center gap-2">
 								<p>Completed: </p>
-								<p suppressHydrationWarning>{todo.completedAt?.toLocaleString()}</p>
+								<p suppressHydrationWarning>{format(todo.completedAt, "dd/MM/yyyy")}</p>
 							</div>
 						) : (
 							todo.dueDate && (
-								<div className="flex flex-row items-center gap-2">
+								<div className="flex flex-row items-center gap-2 text-md">
 									<p>Deadline: </p>
 									<p
 										suppressHydrationWarning
-										className={`${!todo.completed ? getWarningColor(todo.dueDate) : ""}`}
+										className={`${!todo.completed ? getWarningColor(todo.dueDate, now.current) : ""}`}
 									>
-										{todo.dueDate?.toLocaleDateString()}
+										{formatDistanceToNow(todo.dueDate, { addSuffix: true })}
 									</p>
 								</div>
 							)
