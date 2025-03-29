@@ -29,8 +29,8 @@ export function CategoryCard({ category }: { category: CategoryAllItem }) {
 			});
 			toast.success("Category deleted");
 		},
-		onError: () => {
-			toast.error("Failed to delete category");
+		onError: (error) => {
+			toast.error(`Failed to delete category: ${error}`);
 		},
 	});
 

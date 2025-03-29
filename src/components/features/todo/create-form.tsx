@@ -71,8 +71,8 @@ export function TodoCreateForm() {
 			form.reset();
 			setOpen(false);
 		},
-		onError: () => {
-			toast.error("Failed to create todo");
+		onError: (error) => {
+			toast.error(`Failed to create todo: ${error}`);
 		},
 	});
 

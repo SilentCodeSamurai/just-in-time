@@ -29,8 +29,8 @@ export function GroupCard({ group }: { group: GroupAllItem }) {
 			});
 			toast.success("Group deleted");
 		},
-		onError: () => {
-			toast.error("Failed to delete group");
+		onError: (error) => {
+			toast.error(`Failed to delete group: ${error}`);
 		},
 	});
 

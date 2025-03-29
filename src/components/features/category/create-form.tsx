@@ -45,8 +45,8 @@ export function CreateCategoryForm() {
 			toast.success("Category created");
 			setOpen(false);
 		},
-		onError: () => {
-			toast.error("Failed to create category");
+		onError: (error) => {
+			toast.error(`Failed to create category: ${error}`);
 		},
 	});
 

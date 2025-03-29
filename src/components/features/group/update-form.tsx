@@ -47,8 +47,8 @@ export function GroupUpdateForm({ group, onSuccess }: GroupUpdateFormProps) {
 			onSuccess?.();
 			setOpen(false);
 		},
-		onError: () => {
-			toast.error("Failed to update group");
+		onError: (error) => {
+			toast.error(`Failed to update group: ${error}`);
 		},
 	});
 

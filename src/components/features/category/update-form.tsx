@@ -49,8 +49,8 @@ export function CategoryUpdateForm({ category, onSuccess }: CategoryUpdateFormPr
 			onSuccess?.();
 			setOpen(false);
 		},
-		onError: () => {
-			toast.error("Failed to update category");
+		onError: (error) => {
+			toast.error(`Failed to update category: ${error}`);
 		},
 	});
 

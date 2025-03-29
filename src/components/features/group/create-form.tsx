@@ -45,8 +45,8 @@ export function CreateGroupForm() {
 			form.reset();
 			setOpen(false);
 		},
-		onError: () => {
-			toast.error("Failed to create group");
+		onError: (error) => {
+			toast.error(`Failed to create group: ${error}`);
 		},
 	});
 
