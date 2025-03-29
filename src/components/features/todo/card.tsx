@@ -108,11 +108,11 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 			<motion.div animate={controls}>
 				<Card className={`relative w-full gap-1 pl-2 lg:pl-0`}>
 					{todo.completed && (
-						<div className="top-0 right-0 bottom-0 left-0 absolute bg-green-600 opacity-20 rounded-xl pointer-events-none" />
+						<div className="top-0 right-0 bottom-0 left-0 z-10 absolute bg-neutral-900 opacity-60 rounded-xl pointer-events-none" />
 					)}
 					<ColorMarker color={todo.category?.color || "gray"} />
 					<CardHeader>
-						<div className="flex flex-row justify-between items-center gap-2">
+						<div className="flex flex-row justify-between items-start gap-2">
 							<div className="flex flex-row items-center gap-2">
 								<Checkbox
 									className="size-5"
@@ -147,8 +147,8 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 										)
 									: todo.completedAt && (
 											<div className="flex flex-row items-center gap-2">
-												<div className="relative w-5 lg:w-8">
-													<BookmarkCheck className="top-[-27px] lg:top-[-44px] absolute opacity-50 size-5 lg:size-8 text-green-600" />
+												<div className="relative w-6 lg:w-8">
+													<BookmarkCheck className="top-[-23px] lg:top-[-40px] z-20 absolute opacity-50 size-6 lg:size-8 text-green-600" />
 												</div>
 												<p className="text-muted-foreground text-xs" suppressHydrationWarning>
 													{format(todo.completedAt, "dd/MM/yyyy HH:mm")}
