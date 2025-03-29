@@ -57,9 +57,6 @@ export function TodoCreateForm() {
 			categoryId: null,
 			tagIds: null,
 			subtasks: null,
-			meta: {
-				now: new Date(),
-			},
 		},
 	});
 
@@ -248,6 +245,7 @@ export function TodoCreateForm() {
 										<PopoverContent className="p-0 w-auto">
 											<Calendar
 												mode="single"
+												disabled={{before: new Date(new Date().setHours(0, 0, 0, 0))}}
 												selected={field.value || undefined}
 												onSelect={(date) => field.onChange(date || null)}
 											/>

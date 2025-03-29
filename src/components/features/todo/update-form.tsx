@@ -49,9 +49,6 @@ const getFormValues = (todo: TodoAllItem): TodoUpdateFormData => {
 		categoryId: todo.category?.id || undefined,
 		groupId: todo.group?.id || undefined,
 		tagIds: undefined,
-		meta: {
-			now: new Date(),
-		},
 	};
 };
 
@@ -320,6 +317,7 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 										<PopoverContent className="p-0 w-auto">
 											<Calendar
 												mode="single"
+												disabled={{before: new Date(new Date().setHours(0, 0, 0, 0))}}
 												selected={field.value || undefined}
 												onSelect={(date) => field.onChange(date || null)}
 											/>
