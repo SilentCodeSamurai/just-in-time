@@ -89,6 +89,9 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 			data: {
 				id: todo.id,
 				completed,
+				meta: {
+					now: new Date(),
+				},
 			},
 		});
 	};
