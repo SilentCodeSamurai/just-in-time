@@ -5,7 +5,8 @@ export const PrioritySchema = z.number().min(1).max(4);
 export type Priority = z.infer<typeof PrioritySchema>;
 
 const validateDueDate = (dueDate: Date, now: Date) => {
-	const dueDateDate = new Date(dueDate.setHours(0, 0, 0, 0));
+	const dueDateCopy = new Date(dueDate);
+	const dueDateDate = new Date(dueDateCopy.setHours(0, 0, 0, 0));
 	const nowDate = new Date(now.setHours(0, 0, 0, 0));
 	return dueDateDate >= nowDate;
 };
