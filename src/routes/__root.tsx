@@ -86,7 +86,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 			<head>
 				<HeadContent />
 			</head>
-			<body className="bg-gradient-to-br from-background to-primary/10 h-svh">
+			<body className="bg-gradient-to-r from-background to-primary/20 h-svh">
 				{children}
 				<TanStackRouterDevtools position="bottom-right" />
 				<ReactQueryDevtools buttonPosition="bottom-left" />
