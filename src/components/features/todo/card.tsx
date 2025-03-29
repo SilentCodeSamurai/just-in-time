@@ -87,8 +87,6 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 		},
 	});
 
-	console.log(todo.dueDate);
-
 	const handleChangeStatus = (completed: boolean) => {
 		updateMutation.mutate({
 			data: {

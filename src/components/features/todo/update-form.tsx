@@ -73,10 +73,6 @@ export function TodoUpdateForm({ todo, onSuccess, disabled }: TodoUpdateFormProp
 		defaultValues: getFormValues(todo),
 	});
 
-	useEffect(() => {
-		console.log(form.formState.errors);
-	}, [form.formState.errors]);
-
 	const updateMutation = useMutation({
 		mutationFn: todoUpdateServerFn,
 		onSuccess: (updatedTodo) => {
