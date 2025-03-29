@@ -13,7 +13,10 @@ export class TodoService {
 		const { tagIds, subtasks, ...todoData } = input;
 		const todo = await prisma.todo.create({
 			data: {
-				...todoData,
+				title: todoData.title,
+				description: todoData.description,
+				priority: todoData.priority,
+				dueDate: todoData.dueDate,
 				user: { connect: { id: userId } },
 				groupId: undefined,
 				categoryId: undefined,
@@ -58,7 +61,17 @@ export class TodoService {
 	static async update(input: TodoUpdateInputDTO, userId: string) {
 		const todo = await prisma.todo.update({
 			where: { id: input.id, userId },
-			data: { ...input, completedAt: input.completed ? new Date() : undefined },
+			data: {
+				title: input.title,
+				description: input.description,
+				priority: input.priority,
+				dueDate: input.dueDate,
+				completed: input.completed,
+				completedAt: input.completed ? new Date() : undefined,
+				category: input.categoryId ? { connect: { id: input.categoryId } } : undefined,
+				group: input.groupId ? { connect: { id: input.groupId } } : undefined,
+				tags: input.tagIds ? { connect: input.tagIds.map((id) => ({ id })) } : undefined,
+			},
 			include: {
 				tags: true,
 				category: true,
