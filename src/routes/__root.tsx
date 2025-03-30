@@ -2,11 +2,9 @@
 
 import { HeadContent, Outlet, Scripts, useLayoutEffect } from "@tanstack/react-router";
 
-import { Analytics } from "@vercel/analytics/react"
 import { QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { SpeedInsights } from "@vercel/speed-insights/react"
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ThemeColorProvider } from "@/hooks/use-theme-color";
 import { Toaster } from "@/components/ui/sonner";
@@ -100,8 +98,6 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 				<ReactQueryDevtools buttonPosition="bottom-left" />
 				<Scripts />
 				<Toaster />
-				<Analytics />
-				<SpeedInsights/>
 			</body>
 		</html>
 	);
