@@ -91,7 +91,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 			<head>
 				<HeadContent />
 			</head>
-			<body className="relative min-h-svh">
+			<body className="relative">
 				<div className="z-[-1] absolute inset-0 bg-gradient-to-r from-background to-primary opacity-10 h-full" />
 				{children}
 				<TanStackRouterDevtools position="bottom-right" />

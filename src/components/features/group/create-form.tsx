@@ -71,7 +71,7 @@ export function CreateGroupForm() {
 			}}
 		>
 			<DialogTrigger asChild>
-				<Button variant="outline" className="size-8">
+				<Button variant="outline" size="icon">
 					<Plus className="size-4" />
 				</Button>
 			</DialogTrigger>

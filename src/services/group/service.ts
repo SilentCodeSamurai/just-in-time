@@ -28,7 +28,7 @@ export class GroupService {
 				},
 			},
 			orderBy: {
-				name: "asc",
+				createdAt: "desc",
 			},
 		});
 		return groups;

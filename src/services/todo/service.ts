@@ -46,6 +46,9 @@ export class TodoService {
 				group: true,
 				subtasks: true,
 			},
+			orderBy: {
+				createdAt: "desc",
+			},
 		});
 
 		return todos;

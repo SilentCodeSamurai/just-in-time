@@ -1,6 +1,8 @@
 import { TodoFilters, useTodoFilter } from "@/components/features/todo/filters";
 
 import { AnimatedGrid } from "@/components/animated-grid";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { TodoCard } from "@/components/features/todo/card";
 import { TodoCreateForm } from "@/components/features/todo/create-form";
 import { createFileRoute } from "@tanstack/react-router";
@@ -38,8 +40,7 @@ export type TodoSearch = z.infer<typeof TodoSearchSchema>;
 
 export const Route = createFileRoute("/dashboard/todo")({
 	loader: async ({ context }) => {
-		const todos = await context.queryClient.ensureQueryData(todoGetAllQuery);
-		return todos;
+		await context.queryClient.ensureQueryData(todoGetAllQuery);
 	},
 	validateSearch: zodValidator(TodoSearchSchema),
 	component: RouteComponent,
@@ -54,17 +55,15 @@ function RouteComponent() {
 
 	return (
 		<>
-			<div className="flex flex-col gap-4 w-full">
-				<div className="flex flex-col gap-4">
-					<div className="flex flex-row items-center gap-2">
-						<h1 className="font-bold text-xl">Todos: {filteredTodoAll.length}</h1>
-						<TodoCreateForm />
-					</div>
-					<TodoFilters />
-				</div>
-				{filteredTodoAll.length === 0 && <p>No todos found</p>}
-				<AnimatedGrid objects={filteredTodoAll} render={(todo) => <TodoCard todo={todo} />} />
+			<div className="flex flex-row items-center gap-2">
+				<SidebarTrigger />
+				<h1 className="font-bold text-xl">Todos</h1>
+				<TodoCreateForm />
+				<TodoFilters />
 			</div>
+			<Separator />
+			{filteredTodoAll.length === 0 && <p>No todos found</p>}
+			<AnimatedGrid objects={filteredTodoAll} render={(todo) => <TodoCard todo={todo} />} />
 		</>
 	);
 }

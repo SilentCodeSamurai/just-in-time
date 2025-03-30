@@ -34,6 +34,9 @@ export class CategoryService {
 					},
 				},
 			},
+			orderBy: {
+				createdAt: "desc",
+			},
 		});
 		return categories;
 	}

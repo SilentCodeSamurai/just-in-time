@@ -17,6 +17,7 @@ import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as DashboardTodoImport } from './routes/dashboard/todo'
+import { Route as DashboardMetricsImport } from './routes/dashboard/metrics'
 import { Route as DashboardGroupImport } from './routes/dashboard/group'
 import { Route as DashboardCategoryImport } from './routes/dashboard/category'
 import { Route as AuthSignUpImport } from './routes/_auth/sign-up'
@@ -56,6 +57,12 @@ const DashboardIndexRoute = DashboardIndexImport.update({
 const DashboardTodoRoute = DashboardTodoImport.update({
   id: '/todo',
   path: '/todo',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardMetricsRoute = DashboardMetricsImport.update({
+  id: '/metrics',
+  path: '/metrics',
   getParentRoute: () => DashboardRoute,
 } as any)
 
@@ -143,6 +150,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardGroupImport
       parentRoute: typeof DashboardImport
     }
+    '/dashboard/metrics': {
+      id: '/dashboard/metrics'
+      path: '/metrics'
+      fullPath: '/dashboard/metrics'
+      preLoaderRoute: typeof DashboardMetricsImport
+      parentRoute: typeof DashboardImport
+    }
     '/dashboard/todo': {
       id: '/dashboard/todo'
       path: '/todo'
@@ -177,6 +191,7 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 interface DashboardRouteChildren {
   DashboardCategoryRoute: typeof DashboardCategoryRoute
   DashboardGroupRoute: typeof DashboardGroupRoute
+  DashboardMetricsRoute: typeof DashboardMetricsRoute
   DashboardTodoRoute: typeof DashboardTodoRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
@@ -184,6 +199,7 @@ interface DashboardRouteChildren {
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardCategoryRoute: DashboardCategoryRoute,
   DashboardGroupRoute: DashboardGroupRoute,
+  DashboardMetricsRoute: DashboardMetricsRoute,
   DashboardTodoRoute: DashboardTodoRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
@@ -201,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof AuthSignUpRoute
   '/dashboard/category': typeof DashboardCategoryRoute
   '/dashboard/group': typeof DashboardGroupRoute
+  '/dashboard/metrics': typeof DashboardMetricsRoute
   '/dashboard/todo': typeof DashboardTodoRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
@@ -213,6 +230,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof AuthSignUpRoute
   '/dashboard/category': typeof DashboardCategoryRoute
   '/dashboard/group': typeof DashboardGroupRoute
+  '/dashboard/metrics': typeof DashboardMetricsRoute
   '/dashboard/todo': typeof DashboardTodoRoute
   '/dashboard': typeof DashboardIndexRoute
 }
@@ -227,6 +245,7 @@ export interface FileRoutesById {
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/dashboard/category': typeof DashboardCategoryRoute
   '/dashboard/group': typeof DashboardGroupRoute
+  '/dashboard/metrics': typeof DashboardMetricsRoute
   '/dashboard/todo': typeof DashboardTodoRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
@@ -242,6 +261,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/dashboard/category'
     | '/dashboard/group'
+    | '/dashboard/metrics'
     | '/dashboard/todo'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
@@ -253,6 +273,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/dashboard/category'
     | '/dashboard/group'
+    | '/dashboard/metrics'
     | '/dashboard/todo'
     | '/dashboard'
   id:
@@ -265,6 +286,7 @@ export interface FileRouteTypes {
     | '/_auth/sign-up'
     | '/dashboard/category'
     | '/dashboard/group'
+    | '/dashboard/metrics'
     | '/dashboard/todo'
     | '/dashboard/'
   fileRoutesById: FileRoutesById
@@ -315,6 +337,7 @@ export const routeTree = rootRoute
       "children": [
         "/dashboard/category",
         "/dashboard/group",
+        "/dashboard/metrics",
         "/dashboard/todo",
         "/dashboard/"
       ]
@@ -336,6 +359,10 @@ export const routeTree = rootRoute
     },
     "/dashboard/group": {
       "filePath": "dashboard/group.tsx",
+      "parent": "/dashboard"
+    },
+    "/dashboard/metrics": {
+      "filePath": "dashboard/metrics.tsx",
       "parent": "/dashboard"
     },
     "/dashboard/todo": {

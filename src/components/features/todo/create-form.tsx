@@ -100,7 +100,7 @@ export function TodoCreateForm() {
 			}}
 		>
 			<DialogTrigger asChild>
-				<Button variant="outline" className="size-8">
+				<Button variant="outline" size="icon">
 					<Plus className="size-4" />
 				</Button>
 			</DialogTrigger>
@@ -194,7 +194,13 @@ export function TodoCreateForm() {
 											<SelectItem value="none">Not specified</SelectItem>
 											{categoryList.map((category) => (
 												<SelectItem key={category.id} value={category.id}>
-													{category.name}
+													<div className="flex items-center gap-2">
+														<div
+															className="rounded-full size-3"
+															style={{ backgroundColor: category.color || "inherit" }}
+														/>
+														<span>{category.name}</span>
+													</div>
 												</SelectItem>
 											))}
 										</SelectContent>
@@ -222,7 +228,13 @@ export function TodoCreateForm() {
 											<SelectItem value="none">Not specified</SelectItem>
 											{groupList.map((group) => (
 												<SelectItem key={group.id} value={group.id}>
-													{group.name}
+													<div className="flex items-center gap-2">
+														<div
+															className="rounded-full size-3"
+															style={{ backgroundColor: group.color || "inherit" }}
+														/>
+														<span>{group.name}</span>
+													</div>
 												</SelectItem>
 											))}
 										</SelectContent>

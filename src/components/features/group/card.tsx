@@ -7,7 +7,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EllipsisVertical, ExternalLink } from "lucide-react";
+import { EllipsisVertical, ExternalLink, Pencil, Trash } from "lucide-react";
 import { motion, useAnimation } from "motion/react";
 
 import { Button } from "@/components/ui/button";
@@ -40,12 +40,15 @@ export function GroupCard({ group }: { group: GroupAllItem }) {
 				onSuccess={handleUpdateSuccess}
 			/>
 			<motion.div animate={controls}>
-				<Card key={group.id} className={`w-full h-fit relative gap-1 pl-2 lg:pl-0`}>
+				<Card variant="item" key={group.id} className={`w-full h-fit relative gap-1 pl-2 lg:pl-3`}>
 					<ColorMarker color={group.color} />
 					<CardHeader>
 						<div className="flex flex-row justify-between items-center gap-2">
 							<div className="flex flex-row items-center gap-2">
-								<div className="rounded-full size-4" style={{ backgroundColor: "inherit" }} />
+								<div
+									className="rounded-full size-4"
+									style={{ backgroundColor: group.color || "inherit" }}
+								/>
 							</div>
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
@@ -54,8 +57,12 @@ export function GroupCard({ group }: { group: GroupAllItem }) {
 									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent>
-									<DropdownMenuItem onClick={() => setUpdateFormOpen(true)}>Edit</DropdownMenuItem>
+									<DropdownMenuItem onClick={() => setUpdateFormOpen(true)}>
+										<Pencil className="size-4" />
+										Edit
+									</DropdownMenuItem>
 									<DropdownMenuItem onClick={() => setDeleteDialogOpen(true)} variant="destructive">
+										<Trash className="size-4" />
 										Delete
 									</DropdownMenuItem>
 								</DropdownMenuContent>

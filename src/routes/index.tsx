@@ -12,7 +12,7 @@ function RouteComponent() {
 
 	return (
 		<>
-			<div className="flex flex-col justify-center items-center space-y-8 min-h-svh">
+			<div className="flex flex-col justify-center items-center space-y-8 h-svh">
 				<Logo size="lg" animate="always" />
 				{userSession ? (
 					<Button asChild className="w-40 md:w-60 lg:w-70">

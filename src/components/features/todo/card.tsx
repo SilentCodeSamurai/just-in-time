@@ -1,9 +1,7 @@
 "use client";
 
-import { BookmarkCheck, CheckCircle, Clock, EllipsisVertical, TimerOff } from "lucide-react";
+import { BookmarkCheck, Clock, EllipsisVertical, Pencil, TimerOff, Trash } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -12,7 +10,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { differenceInHours, format, formatDistanceToNow } from "date-fns";
 import { motion, useAnimation } from "motion/react";
-import { todoDeleteServerFn, todoUpdateServerFn } from "@/server/todo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 
@@ -23,9 +20,9 @@ import { PriorityBadge } from "./priority-badges";
 import { TodoAllItem } from "@/types/todo";
 import { TodoDeleteDialog } from "./delete-dialog";
 import { TodoUpdateForm } from "./update-form";
-import { Trash } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { todoUpdateServerFn } from "@/server/todo";
 
 const WARNING_COLORS_MAPPING: Map<number, string> = new Map([
 	[0, "text-red-600"],
@@ -106,9 +103,9 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 				onOpenChange={setUpdateFormOpen}
 			/>
 			<motion.div animate={controls}>
-				<Card className={`relative w-full gap-1 pl-2 lg:pl-0`}>
+				<Card variant="item" className={`relative w-full gap-1 pl-2 lg:pl-3`}>
 					{todo.completed && (
-						<div className="top-0 right-0 bottom-0 left-0 z-10 absolute bg-neutral-900 opacity-60 rounded-xl pointer-events-none" />
+						<div className="top-0 right-0 bottom-0 left-0 z-10 absolute bg-neutral-900 opacity-60 rounded-lg pointer-events-none" />
 					)}
 					<ColorMarker color={todo.category?.color || "gray"} />
 					<CardHeader>
@@ -148,7 +145,7 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 									: todo.completedAt && (
 											<div className="flex flex-row items-center gap-2">
 												<div className="relative w-6 lg:w-8">
-													<BookmarkCheck className="top-[-23px] lg:top-[-40px] z-20 absolute opacity-50 size-6 lg:size-8 text-green-600" />
+													<BookmarkCheck className="top-[-23px] lg:top-[-24px] z-20 absolute opacity-50 size-6 lg:size-8 text-green-600" />
 												</div>
 												<p className="text-muted-foreground text-xs" suppressHydrationWarning>
 													{format(todo.completedAt, "dd/MM/yyyy HH:mm")}
@@ -172,9 +169,11 @@ export function TodoCard({ todo }: { todo: TodoAllItem }) {
 										onClick={() => setUpdateFormOpen(true)}
 										disabled={todo.completed || updateMutation.isPending}
 									>
+										<Pencil className="size-4" />
 										Edit
 									</DropdownMenuItem>
 									<DropdownMenuItem onClick={() => setDeleteDialogOpen(true)} variant="destructive">
+										<Trash className="size-4" />
 										Delete
 									</DropdownMenuItem>
 								</DropdownMenuContent>

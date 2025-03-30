@@ -7,7 +7,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EllipsisVertical, ExternalLink } from "lucide-react";
+import { EllipsisVertical, ExternalLink, Pencil, Trash } from "lucide-react";
 import { motion, useAnimation } from "motion/react";
 
 import { Button } from "@/components/ui/button";
@@ -40,7 +40,7 @@ export function CategoryCard({ category }: { category: CategoryAllItem }) {
 				onSuccess={handleUpdateSuccess}
 			/>
 			<motion.div animate={controls}>
-				<Card key={category.id} className={`w-full h-fit relative gap-1 pl-2 lg:pl-0`}>
+				<Card variant="item" key={category.id} className={`w-full h-fit relative gap-1 pl-2 lg:pl-3`}>
 					<ColorMarker color={category.color} />
 					<CardHeader>
 						<div className="flex flex-row justify-between items-center gap-2">
@@ -57,8 +57,12 @@ export function CategoryCard({ category }: { category: CategoryAllItem }) {
 									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent>
-									<DropdownMenuItem onClick={() => setUpdateFormOpen(true)}>Edit</DropdownMenuItem>
+									<DropdownMenuItem onClick={() => setUpdateFormOpen(true)}>
+										<Pencil className="size-4" />
+										Edit
+									</DropdownMenuItem>
 									<DropdownMenuItem variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
+										<Trash className="size-4" />
 										Delete
 									</DropdownMenuItem>
 								</DropdownMenuContent>

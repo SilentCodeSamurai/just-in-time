@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_auth")({
 
 function RouteComponent() {
 	return (
-		<div className="flex flex-col justify-center items-center h-full">
+		<div className="flex flex-col justify-center items-center h-svh">
 			<Outlet />
 		</div>
 	);
