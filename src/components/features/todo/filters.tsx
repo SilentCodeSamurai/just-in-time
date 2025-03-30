@@ -16,6 +16,7 @@ import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { PriorityBadge } from "./priority-badges";
 import { RemoveUndefined } from "@/types/utils";
@@ -60,6 +61,7 @@ export function TodoFilters() {
 	const handleSortByChange = (sortBy: Sorting["sortBy"]) => {
 		navigate({
 			to: ".",
+			replace: true,
 			search: (prev) => {
 				let newSortOrder: "asc" | "desc" = "asc";
 				if (!prev.sorting) {
@@ -101,6 +103,7 @@ export function TodoFilters() {
 	const handleToggleFilter = (key: FilterKey, value: Filter[FilterKey] | "all") => {
 		navigate({
 			to: ".",
+			replace: true,
 			search: (prev) => {
 				const newFilter = { ...prev.filter };
 				if (value === "all") {
@@ -227,7 +230,16 @@ export function TodoFilters() {
 						</Select>
 					</div>
 					<div className="flex flex-col gap-2">
-						<Label>Deadline</Label>
+						<div className="flex flex-col gap-2">
+							<Label>{filter?.exactDate ? "Deadline" : "Expires before"}</Label>
+							<div className="flex flex-row items-center gap-2">
+								<Label>exact</Label>
+								<Checkbox
+									checked={filter?.exactDate || false}
+									onCheckedChange={(value) => handleToggleFilter("exactDate", value || undefined)}
+								/>
+							</div>
+						</div>
 						<Popover>
 							<PopoverTrigger asChild>
 								<Button
@@ -238,9 +250,14 @@ export function TodoFilters() {
 									)}
 								>
 									<CalendarIcon className="mr-2 w-4 h-4" />
-									{date ? `${format(date, "PPP")}` : "Expires before"}
+									{date
+										? `${format(date, "PPP")}`
+										: filter?.exactDate
+											? "Deadline"
+											: "Expires before"}
 								</Button>
 							</PopoverTrigger>
+
 							<PopoverContent className="p-0 w-auto" align="start">
 								<Calendar
 									mode="single"

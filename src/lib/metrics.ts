@@ -1,9 +1,6 @@
 import { TodoAllItem } from "@/types/todo";
+import { getDateString } from "./utils";
 import { intlFormat } from "date-fns";
-
-function getDateString(date: Date) {
-	return date.toISOString().split("T")[0];
-}
 
 export function getMetricsTodoCompletionsCreations(todoAll: TodoAllItem[]) {
 	let metrics: {

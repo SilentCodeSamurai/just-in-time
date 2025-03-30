@@ -19,7 +19,8 @@ const TodoSearchSchema = z.object({
 			// tagIds: z.array(z.string()).optional(),
 			priority: z.number().min(1).max(4).optional(),
 			completed: z.boolean().optional(),
-			dueDate: z.string({ description: "ISO Date" }).datetime({ offset: true }).optional(),
+			dueDate: z.string({ description: "ISO Date" }).date().optional(),
+			exactDate: z.boolean().optional(),
 		})
 		.optional(),
 	paging: z

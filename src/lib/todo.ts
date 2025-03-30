@@ -1,18 +1,29 @@
 import { RemoveUndefined } from "@/types/utils";
 import { TodoAllItem } from "@/types/todo";
 import { TodoSearch } from "@/routes/dashboard/todo";
+import { isSameDay } from "date-fns";
 
 type Filter = RemoveUndefined<TodoSearch["filter"]>;
 type Sorting = RemoveUndefined<TodoSearch["sorting"]>;
 
 export function filterTodo(todoAll: TodoAllItem[], filter: Filter) {
 	const result = todoAll.filter((todo) => {
+		const exactDate = filter.exactDate;
 		for (const [filterKey, filterValue] of Object.entries(filter)) {
 			const key = filterKey as keyof Filter;
+			if (key === "exactDate") {
+				continue;
+			}
 			if (key === "dueDate" && filterValue !== undefined && todo.dueDate !== null) {
 				const dueDate = new Date(filterValue as string);
-				if (dueDate < todo.dueDate) {
-					return false;
+				if (exactDate) {
+					if (!isSameDay(dueDate, todo.dueDate)) {
+						return false;
+					}
+				} else {
+					if (dueDate < todo.dueDate) {
+						return false;
+					}
 				}
 			} else if (filterValue !== undefined && todo[key] !== filterValue) {
 				return false;

@@ -17,7 +17,7 @@ function Layout() {
 	return (
 		<SidebarProvider>
 			<AppSidebar email={userSession?.email ?? "Who are you?"} />
-			<main className="flex flex-col gap-2 p-2 w-full h-svh">
+			<main className="flex flex-col gap-2 p-2 w-full min-h-svh">
 				<Outlet />
 			</main>
 		</SidebarProvider>
