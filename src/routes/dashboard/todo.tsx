@@ -1,8 +1,10 @@
 import { TodoFilters, useTodoFilter } from "@/components/features/todo/filters";
 
 import { AnimatedGrid } from "@/components/animated-grid";
+import { DashboardContent } from "@/components/dashboard-content";
+import { DashboardHeader } from "@/components/dashboard-header";
 import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SlidingHeader } from "@/components/ui/sliding-header";
 import { TodoCard } from "@/components/features/todo/card";
 import { TodoCreateForm } from "@/components/features/todo/create-form";
 import { createFileRoute } from "@tanstack/react-router";
@@ -56,15 +58,16 @@ function RouteComponent() {
 
 	return (
 		<>
-			<div className="flex flex-row items-center gap-2">
-				<SidebarTrigger />
+			<DashboardHeader>
 				<h1 className="font-bold text-xl">Todos</h1>
 				<TodoCreateForm />
 				<TodoFilters />
-			</div>
-			<Separator />
-			{filteredTodoAll.length === 0 && <p>No todos found</p>}
-			<AnimatedGrid objects={filteredTodoAll} render={(todo) => <TodoCard todo={todo} />} />
+			</DashboardHeader>
+
+			<DashboardContent>
+				{filteredTodoAll.length === 0 && <p>No todos found</p>}
+				<AnimatedGrid objects={filteredTodoAll} render={(todo) => <TodoCard todo={todo} />} />
+			</DashboardContent>
 		</>
 	);
 }

@@ -1,8 +1,9 @@
 import { AnimatedGrid } from "@/components/animated-grid";
 import { CategoryCard } from "@/components/features/category/card";
 import { CreateCategoryForm } from "@/components/features/category/create-form";
+import { DashboardContent } from "@/components/dashboard-content";
+import { DashboardHeader } from "@/components/dashboard-header";
 import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { categoryGetAllQuery } from "@/queries/category";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -21,13 +22,14 @@ function RouteComponent() {
 
 	return (
 		<>
-			<div className="flex flex-row items-center gap-2">
-				<SidebarTrigger />
+			<DashboardHeader>
 				<h1 className="font-bold text-xl">Categories</h1>
 				<CreateCategoryForm />
-			</div>
-			<Separator />
-			<AnimatedGrid objects={categoryAll} render={(category) => <CategoryCard category={category} />} />
+			</DashboardHeader>
+
+			<DashboardContent>
+				<AnimatedGrid objects={categoryAll} render={(category) => <CategoryCard category={category} />} />
+			</DashboardContent>
 		</>
 	);
 }

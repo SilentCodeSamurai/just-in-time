@@ -1,4 +1,5 @@
 import { Hourglass } from "lucide-react";
+import React from "react";
 import { cn } from "@/lib/utils";
 import { cva } from "class-variance-authority";
 
@@ -26,9 +27,17 @@ const textVariants = cva("font-bold whitespace-nowrap", {
 	},
 });
 
-export function Logo({ animate = "hover", size = "lg" }: { animate?: "hover" | "always"; size?: "lg" | "sm" }) {
+type LogoProps = { animate?: "hover" | "always"; size?: "lg" | "sm" } & React.ComponentProps<"div">;
+
+export function Logo({ animate = "hover", size = "lg", className }: LogoProps) {
 	return (
-		<div className={cn("relative flex items-center gap-2", animate === "hover" && "hover:[&>_svg]:animate-hourglass")}>
+		<div
+			className={cn(
+				"relative flex items-center gap-2",
+				animate === "hover" && "hover:[&>_svg]:animate-hourglass",
+				className
+			)}
+		>
 			<h1 className={cn(textVariants({ size }))}>
 				JUST IN{" "}
 				<span className="text-primary">
